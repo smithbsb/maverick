@@ -90,6 +90,56 @@ sub copyValidFilesInOriginToValid {
     }
 }
 
+sub listValidFiles {
+    my ($dcpath) = @_;
+
+    opendir DIR, $dcpath;
+    my @list_of_valids = readdir(DIR);
+    close DIR;
+
+    return @list_of_valids;
+}
+
+sub selectUniqueFilesFromValid {
+    my ($p_valid, @list_of_valids) = @_;
+    
+    my @list_of_uniques = ();
+    
+    foreach (@list_of_valids) {
+        my $arq = $_;
+        if ($arq ne "." && $arq ne "..") {
+            my $code = substr $arq, 11, 4;
+            my $cmd = `ls $p_valid/*$code* | wc -l`;
+            chomp $cmd;
+            if ($cmd eq 1) {
+                push(@list_of_uniques, $arq);
+            }
+        }
+    }
+    return @list_of_uniques;
+}
+
+sub selectDuplicateFilesFromValid {
+    my ($p_valid, @list_of_valids) = @_;
+
+    my @list_of_duplicates = ();
+
+    foreach (@list_of_valids) {
+        my $arq = $_;
+        if ($arq ne "." && $arq ne "..") {
+            my $code = substr $arq, 11, 4;
+            my $cmd = `ls $p_valid/*$code* | wc -l`;
+            chomp $cmd;
+            if ($cmd ne 1) {
+                push(@list_of_duplicates, $arq);
+            }
+        }
+    }
+    return @list_of_duplicates;
+}
+
+
+
 
 
 1;
